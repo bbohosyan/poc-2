@@ -25,7 +25,13 @@
       "Bash(do echo \"Request $i:\")",
       "Bash(done)",
       "Bash(mvn compile:*)",
-      "Bash(docker logs:*)"
+      "Bash(docker logs:*)",
+      "Bash(mvn test:*)",
+      "Bash(export MAVEN_SKIP_RC=true)",
+      "Bash(set MAVEN_SKIP_RC=true)",
+      "Bash(cmd /c \"mvnw.cmd test -q\")",
+      "Bash(cmd /c \"mvnw.cmd test\")",
+      "Bash(cmd /c \"mvnw.cmd compile test-compile 2>&1\")"
     ]
   }
 }
