@@ -1,4 +1,4 @@
-package org.uniqa.config;
+package org.uniqa.interceptor;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;

@@ -23,7 +23,9 @@
       "Bash(ping:*)",
       "Bash(for:*)",
       "Bash(do echo \"Request $i:\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(mvn compile:*)",
+      "Bash(docker logs:*)"
     ]
   }
 }
