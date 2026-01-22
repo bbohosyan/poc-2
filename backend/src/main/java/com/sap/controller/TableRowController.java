@@ -21,6 +21,8 @@ import com.sap.service.TableRowService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/rows")
@@ -94,27 +96,30 @@ public class TableRowController {
     @PostMapping("/bulk")
     @CacheEvict(value = {"rows", "rowCount"}, allEntries = true)
     public ResponseEntity<Map<String, Object>> createBulk(
-            @Valid @RequestBody List<CreateTableRowRequest> requests) {
+            @Valid @RequestBody List<CreateTableRowRequest> requests) throws ExecutionException, InterruptedException {
 
         LOG.info("Bulk creation requested for {} rows", requests.size());
-
+        CompletableFuture<List<TableRow>> result;
         String strategy;
         if (requests.size() >= BULK_OPTIMIZATION_THRESHOLD) {
-            asyncTableRowService.createBulkOptimized(requests);
+            result = asyncTableRowService.createBulkOptimized(requests);
             strategy = "optimized_batch";
             LOG.info("Using optimized batch strategy for {} rows", requests.size());
         } else {
-            asyncTableRowService.createBulk(requests);
+            result = asyncTableRowService.createBulk(requests);
             strategy = "sequential";
             LOG.info("Using sequential strategy for {} rows", requests.size());
         }
+
+        // save in metrics etc DB
 
         return ResponseEntity.accepted()
                 .body(Map.of(
                         "status", "processing",
                         "message", "Bulk creation started",
                         "count", requests.size(),
-                        "strategy", strategy
+                        "strategy", strategy,
+                        "result", result.get()
                 ));
     }
 

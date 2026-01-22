@@ -53,6 +53,7 @@ public class AsyncTableRowService {
 
     @Async("taskExecutor")
     @Transactional
+    // TODO: make in seperate methods/ Async and Transactional
     public CompletableFuture<List<TableRow>> createBulkOptimized(List<CreateTableRowRequest> requests) {
         LOG.info("Starting optimized bulk creation of {} rows", requests.size());
 
@@ -61,12 +62,13 @@ public class AsyncTableRowService {
                     TableRow row = new TableRow();
                     row.setTypeNumber(request.getTypeNumber());
                     row.setTypeSelector(request.getTypeSelector());
-                    row.setTypeFreeText(sanitizationService.sanitize(request.getTypeSelector()));
+                    row.setTypeFreeText(sanitizationService.sanitize(request.getTypeFreeText()));
                     return row;
                 })
                 .collect(Collectors.toList());
 
         List<TableRow> savedRows = batchService.saveBatch(rows);
+        // if save in other DBs tables etc.
 
         LOG.info("Completed optimized bulk creation of {} rows", savedRows.size());
         return CompletableFuture.completedFuture(savedRows);
