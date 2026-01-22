@@ -30,9 +30,6 @@ public class AsyncTableRowService {
     @Autowired
     private BatchTableRowService batchService;
 
-    /**
-     * Basic bulk creation - saves one by one
-     */
     @Async("taskExecutor")
     @Timed(value = "async.bulk.create", description = "Time to create bulk rows")
     public CompletableFuture<List<TableRow>> createBulk(List<CreateTableRowRequest> requests) {
@@ -54,9 +51,6 @@ public class AsyncTableRowService {
         return CompletableFuture.completedFuture(savedRows);
     }
 
-    /**
-     * Optimized bulk creation with batch processing
-     */
     @Async("taskExecutor")
     @Transactional
     public CompletableFuture<List<TableRow>> createBulkOptimized(List<CreateTableRowRequest> requests) {
@@ -78,18 +72,14 @@ public class AsyncTableRowService {
         return CompletableFuture.completedFuture(savedRows);
     }
 
-    /**
-     * Heavy operations that should not block response
-     */
     @Async("taskExecutor")
     public void generateReport(Long userId) {
         LOG.info("Generating report for user: {}", userId);
 
         try {
-            Thread.sleep(5000); // Simulate heavy processing
+            Thread.sleep(5000);
 
             List<TableRow> allRows = repository.findAll();
-            // Generate report logic here
 
             LOG.info("Report generated successfully for user: {}", userId);
         } catch (Exception e) {
@@ -100,12 +90,10 @@ public class AsyncTableRowService {
     @Async("taskExecutor")
     public void generateMonthlyReport(Long userId) {
         LOG.info("Generating monthly report for user: {}", userId);
-        // Heavy processing...
     }
 
     @Async("taskExecutor")
     public void exportToExcel(Long userId) {
         LOG.info("Exporting data to Excel for user: {}", userId);
-        // Heavy processing...
     }
 }

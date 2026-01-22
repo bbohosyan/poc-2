@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @DisplayName("TableRowController Integration Tests")
 class TableRowControllerIntegrationTest {
 
@@ -40,13 +42,11 @@ class TableRowControllerIntegrationTest {
     @Test
     @DisplayName("POST /rows - Should create new row")
     void shouldCreateNewRow() throws Exception {
-        // Given
         CreateTableRowRequest request = new CreateTableRowRequest();
-        request.typeNumber = 1;
-        request.typeSelector = "A";
-        request.typeFreeText = "Integration test text";
+        request.setTypeNumber(1);
+        request.setTypeSelector("A");
+        request.setTypeFreeText("Integration test text");
 
-        // When & Then
         mockMvc.perform(post("/rows")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -62,16 +62,14 @@ class TableRowControllerIntegrationTest {
     @Test
     @DisplayName("GET /rows - Should return paginated rows")
     void shouldReturnPaginatedRows() throws Exception {
-        // Given
-        for (int i = 0; i < 15; i++) {
+        for (int i = 1; i <= 15; i++) {
             TableRow row = new TableRow();
-            row.typeNumber = i;
-            row.typeSelector = "Type" + i;
-            row.typeFreeText = "Text " + i;
+            row.setTypeNumber(i);
+            row.setTypeSelector("Type" + i);
+            row.setTypeFreeText("Text " + i);
             repository.save(row);
         }
 
-        // When & Then
         mockMvc.perform(get("/rows")
                 .param("page", "0")
                 .param("size", "10"))
@@ -94,27 +92,23 @@ class TableRowControllerIntegrationTest {
     @Test
     @DisplayName("DELETE /rows/{id} - Should delete row")
     void shouldDeleteRow() throws Exception {
-        // Given
         TableRow row = new TableRow();
-        row.typeNumber = 1;
-        row.typeSelector = "A";
-        row.typeFreeText = "To be deleted";
+        row.setTypeNumber(1);
+        row.setTypeSelector("A");
+        row.setTypeFreeText("To be deleted");
         row = repository.save(row);
 
-        // When & Then
-        mockMvc.perform(delete("/rows/" + row.id))
+        mockMvc.perform(delete("/rows/" + row.getId()))
                 .andExpect(status().isNoContent());
 
-        assertThat(repository.findById(row.id)).isEmpty();
+        assertThat(repository.findById(row.getId())).isEmpty();
     }
 
     @Test
     @DisplayName("POST /rows - Should validate required fields")
     void shouldValidateRequiredFields() throws Exception {
-        // Given - empty request
         CreateTableRowRequest request = new CreateTableRowRequest();
 
-        // When & Then
         mockMvc.perform(post("/rows")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -124,13 +118,11 @@ class TableRowControllerIntegrationTest {
     @Test
     @DisplayName("POST /rows/bulk - Should accept bulk creation")
     void shouldAcceptBulkCreation() throws Exception {
-        // Given
         String bulkRequest = "[" +
                 "{\"typeNumber\":1,\"typeSelector\":\"A\",\"typeFreeText\":\"Text1\"}," +
                 "{\"typeNumber\":2,\"typeSelector\":\"B\",\"typeFreeText\":\"Text2\"}" +
                 "]";
 
-        // When & Then
         mockMvc.perform(post("/rows/bulk")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(bulkRequest))

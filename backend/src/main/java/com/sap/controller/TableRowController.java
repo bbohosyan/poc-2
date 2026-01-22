@@ -60,12 +60,10 @@ public class TableRowController {
                     .body(Map.of("error", "Size must be at least 1"));
         }
 
-        // Track query performance with timer
         Timer.Sample sample = metrics.startTimer();
 
         Page<TableRow> pageResult = repository.findAll(PageRequest.of(page, size));
 
-        // Record query duration
         metrics.recordTimer(sample);
 
         Map<String, Object> response = new HashMap<>();
@@ -93,11 +91,6 @@ public class TableRowController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Bulk creation endpoint - automatically chooses optimal strategy based on batch size.
-     * For small batches (< 50): uses simple sequential save
-     * For large batches (>= 50): uses optimized batch processing with EntityManager
-     */
     @PostMapping("/bulk")
     @CacheEvict(value = {"rows", "rowCount"}, allEntries = true)
     public ResponseEntity<Map<String, Object>> createBulk(
@@ -107,12 +100,10 @@ public class TableRowController {
 
         String strategy;
         if (requests.size() >= BULK_OPTIMIZATION_THRESHOLD) {
-            // Use optimized batch processing for large datasets
             asyncTableRowService.createBulkOptimized(requests);
             strategy = "optimized_batch";
             LOG.info("Using optimized batch strategy for {} rows", requests.size());
         } else {
-            // Use simple sequential save for small datasets
             asyncTableRowService.createBulk(requests);
             strategy = "sequential";
             LOG.info("Using sequential strategy for {} rows", requests.size());
@@ -127,9 +118,6 @@ public class TableRowController {
                 ));
     }
 
-    /**
-     * Generate report asynchronously - heavy operation that runs in background
-     */
     @PostMapping("/reports/generate")
     public ResponseEntity<Map<String, Object>> generateReport(
             @RequestParam(defaultValue = "1") Long userId) {
@@ -146,9 +134,6 @@ public class TableRowController {
                 ));
     }
 
-    /**
-     * Generate monthly report asynchronously
-     */
     @PostMapping("/reports/monthly")
     public ResponseEntity<Map<String, Object>> generateMonthlyReport(
             @RequestParam(defaultValue = "1") Long userId) {
@@ -165,9 +150,6 @@ public class TableRowController {
                 ));
     }
 
-    /**
-     * Export data to Excel asynchronously - heavy operation
-     */
     @PostMapping("/export/excel")
     public ResponseEntity<Map<String, Object>> exportToExcel(
             @RequestParam(defaultValue = "1") Long userId) {

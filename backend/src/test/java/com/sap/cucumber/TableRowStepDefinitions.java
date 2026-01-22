@@ -55,12 +55,12 @@ public class TableRowStepDefinitions {
         List<Map<String, String>> rows = dataTable.asMaps();
         for (Map<String, String> row : rows) {
             TableRow tableRow = new TableRow();
-            tableRow.typeNumber = Integer.parseInt(row.get("typeNumber"));
-            tableRow.typeSelector = row.get("typeSelector");
-            tableRow.typeFreeText = row.get("typeFreeText");
+            tableRow.setTypeNumber(Integer.parseInt(row.get("typeNumber")));
+            tableRow.setTypeSelector(row.get("typeSelector"));
+            tableRow.setTypeFreeText(row.get("typeFreeText"));
             TableRow saved = repository.save(tableRow);
-            createdIds.add(saved.id);
-            lastCreatedId = saved.id;
+            createdIds.add(saved.getId());
+            lastCreatedId = saved.getId();
         }
     }
 
@@ -68,9 +68,9 @@ public class TableRowStepDefinitions {
     public void iCreateATableRowWith(DataTable dataTable) throws Exception {
         Map<String, String> row = dataTable.asMaps().get(0);
         CreateTableRowRequest request = new CreateTableRowRequest();
-        request.typeNumber = Integer.parseInt(row.get("typeNumber"));
-        request.typeSelector = row.get("typeSelector");
-        request.typeFreeText = row.get("typeFreeText");
+        request.setTypeNumber(Integer.parseInt(row.get("typeNumber")));
+        request.setTypeSelector(row.get("typeSelector"));
+        request.setTypeFreeText(row.get("typeFreeText"));
 
         lastResult = mockMvc.perform(post("/rows")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -115,9 +115,9 @@ public class TableRowStepDefinitions {
 
         for (Map<String, String> row : rows) {
             CreateTableRowRequest request = new CreateTableRowRequest();
-            request.typeNumber = Integer.parseInt(row.get("typeNumber"));
-            request.typeSelector = row.get("typeSelector");
-            request.typeFreeText = row.get("typeFreeText");
+            request.setTypeNumber(Integer.parseInt(row.get("typeNumber")));
+            request.setTypeSelector(row.get("typeSelector"));
+            request.setTypeFreeText(row.get("typeFreeText"));
             requests.add(request);
         }
 

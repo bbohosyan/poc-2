@@ -14,7 +14,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // Apply rate limiting only to POST endpoint
         registry.addInterceptor(rateLimitInterceptor)
                 .addPathPatterns("/rows")
                 .excludePathPatterns("/hello");

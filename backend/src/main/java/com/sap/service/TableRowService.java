@@ -41,10 +41,8 @@ public class TableRowService {
 
         TableRow saved = repository.save(row);
 
-        // Publish event
         eventPublisher.publishEvent(new RowCreatedEvent(this, saved));
 
-        // Track metrics
         metrics.incrementCreated();
 
         LOG.info("Row created with ID: {}", saved.getId());

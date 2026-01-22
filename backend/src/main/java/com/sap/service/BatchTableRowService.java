@@ -24,7 +24,6 @@ public class BatchTableRowService {
                 entityManager.clear();
             }
         }
-        // Final flush за останалите
         entityManager.flush();
         entityManager.clear();
         return rows;

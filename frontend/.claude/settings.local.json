@@ -31,7 +31,8 @@
       "Bash(set MAVEN_SKIP_RC=true)",
       "Bash(cmd /c \"mvnw.cmd test -q\")",
       "Bash(cmd /c \"mvnw.cmd test\")",
-      "Bash(cmd /c \"mvnw.cmd compile test-compile 2>&1\")"
+      "Bash(cmd /c \"mvnw.cmd compile test-compile 2>&1\")",
+      "Bash(npm run dev:*)"
     ]
   }
 }

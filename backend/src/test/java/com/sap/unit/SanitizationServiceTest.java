@@ -23,13 +23,8 @@ class SanitizationServiceTest {
     @Test
     @DisplayName("Should remove HTML tags from input")
     void shouldRemoveHtmlTags() {
-        // Given
         String input = "<p>Hello <b>World</b></p>";
-
-        // When
         String result = sanitizationService.sanitize(input);
-
-        // Then
         assertThat(result).doesNotContain("<p>", "</p>", "<b>", "</b>");
     }
 
@@ -79,10 +74,8 @@ class SanitizationServiceTest {
         // Given
         String input = "Hello World! This is normal text with numbers 12345.";
 
-        // When
         String result = sanitizationService.sanitize(input);
 
-        // Then
         assertThat(result).isEqualTo(input);
     }
 }

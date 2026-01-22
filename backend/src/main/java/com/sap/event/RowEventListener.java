@@ -14,14 +14,12 @@ public class RowEventListener {
     @EventListener
     @Async
     public void handleRowCreated(RowCreatedEvent event) {
-        // Send notification, update search index, trigger workflow, etc.
         LOG.info("Row created event: {}", event.getRow().getId());
     }
 
     @EventListener
     @Async
     public void auditRowCreation(RowCreatedEvent event) {
-        // Audit trail
         LOG.info("Audit: Row with ID {} was created", event.getRow().getId());
     }
 }

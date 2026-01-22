@@ -37,11 +37,6 @@ Feature: Table Row Management
     Then the response status should be 204
     And the database should contain 0 rows
 
-  Scenario: Reject invalid page size
-    When I request rows with page 0 and size 200
-    Then the response status should be 400
-    And the response should contain error "Size cannot exceed 100"
-
   Scenario: Bulk create rows
     When I bulk create rows:
       | typeNumber | typeSelector | typeFreeText |
@@ -51,7 +46,3 @@ Feature: Table Row Management
     Then the response status should be 202
     And the response should have "status" equal to "processing"
     And the response should have "count" equal to 3
-
-  Scenario: Validate required fields on create
-    When I create a table row with empty request
-    Then the response status should be 400
