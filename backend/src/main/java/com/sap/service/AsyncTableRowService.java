@@ -38,10 +38,11 @@ public class AsyncTableRowService {
         List<TableRow> savedRows = new ArrayList<>();
 
         for (CreateTableRowRequest request : requests) {
-            TableRow row = new TableRow();
-            row.setTypeNumber(request.getTypeNumber());
-            row.setTypeSelector(request.getTypeSelector());
-            row.setTypeFreeText(sanitizationService.sanitize(request.getTypeFreeText()));
+            TableRow row = TableRow.builder()
+                    .typeNumber(request.getTypeNumber())
+                    .typeSelector(request.getTypeSelector())
+                    .typeFreeText(sanitizationService.sanitize(request.getTypeFreeText()))
+                    .build();
 
             TableRow saved = repository.save(row);
             savedRows.add(saved);
@@ -59,16 +60,17 @@ public class AsyncTableRowService {
 
         List<TableRow> rows = requests.stream()
                 .map(request -> {
-                    TableRow row = new TableRow();
-                    row.setTypeNumber(request.getTypeNumber());
-                    row.setTypeSelector(request.getTypeSelector());
-                    row.setTypeFreeText(sanitizationService.sanitize(request.getTypeFreeText()));
+                    TableRow row = TableRow.builder()
+                            .typeNumber(request.getTypeNumber())
+                            .typeSelector(request.getTypeSelector())
+                            .typeFreeText(sanitizationService.sanitize(request.getTypeFreeText()))
+                            .build();
                     return row;
                 })
                 .collect(Collectors.toList());
 
         List<TableRow> savedRows = batchService.saveBatch(rows);
-        // if save in other DBs tables etc.
+        //TODO:  if save in other DBs tables etc.
 
         LOG.info("Completed optimized bulk creation of {} rows", savedRows.size());
         return CompletableFuture.completedFuture(savedRows);

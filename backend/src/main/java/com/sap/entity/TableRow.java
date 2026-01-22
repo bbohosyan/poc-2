@@ -34,6 +34,17 @@ public class TableRow {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    public TableRow() {
+    }
+
+    private TableRow(Builder builder) {
+        this.id = builder.id;
+        this.typeNumber = builder.typeNumber;
+        this.typeSelector = builder.typeSelector;
+        this.typeFreeText = builder.typeFreeText;
+        this.createdAt = builder.createdAt;
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -77,5 +88,49 @@ public class TableRow {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public static class Builder {
+        private Long id;
+        private Integer typeNumber;
+        private String typeSelector;
+        private String typeFreeText;
+        private LocalDateTime createdAt;
+
+        private Builder() {
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder typeNumber(Integer typeNumber) {
+            this.typeNumber = typeNumber;
+            return this;
+        }
+
+        public Builder typeSelector(String typeSelector) {
+            this.typeSelector = typeSelector;
+            return this;
+        }
+
+        public Builder typeFreeText(String typeFreeText) {
+            this.typeFreeText = typeFreeText;
+            return this;
+        }
+
+        public Builder createdAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public TableRow build() {
+            return new TableRow(this);
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 }

@@ -1,5 +1,6 @@
 package com.sap.controller;
 
+import com.sap.service.ExportService;
 import io.micrometer.core.instrument.Timer;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -9,6 +10,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.sap.service.AsyncTableRowService;
@@ -33,6 +36,7 @@ public class TableRowController {
 
     private static final int BULK_OPTIMIZATION_THRESHOLD = 50;
 
+    // TODO: Create interfaces for the Services
     @Autowired
     private TableRowRepository repository;
 
@@ -44,6 +48,9 @@ public class TableRowController {
 
     @Autowired
     private TableRowMetrics metrics;
+
+    @Autowired
+    private ExportService exportService;
 
     @GetMapping
     @Cacheable(value = "rows", key = "#page + '-' + #size")
@@ -169,5 +176,28 @@ public class TableRowController {
                         "message", "Excel export started",
                         "userId", userId
                 ));
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportData(
+            @RequestParam(defaultValue = "csv") String format) {
+
+        LOG.info("Export requested in format: {}", format);
+
+        try {
+            ExportService.ExportResult result = exportService.export(format);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(result.getContentType()));
+            headers.setContentDispositionFormData("attachment", result.getFileName());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(result.getData());
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(("Error: " + e.getMessage()).getBytes());
+        }
     }
 }

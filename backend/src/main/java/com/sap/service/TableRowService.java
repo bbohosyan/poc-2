@@ -1,5 +1,6 @@
 package com.sap.service;
 
+import com.sap.annotation.LogDatabaseCount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +31,16 @@ public class TableRowService {
     private TableRowMetrics metrics;
 
     @Transactional
+    @LogDatabaseCount(entity = "TableRow")
     public TableRow create(CreateTableRowRequest request) {
         LOG.info("Creating row - typeNumber: {}, typeSelector: {}",
                 request.getTypeNumber(), request.getTypeSelector());
 
-        TableRow row = new TableRow();
-        row.setTypeNumber(request.getTypeNumber());
-        row.setTypeSelector(request.getTypeSelector());
-        row.setTypeFreeText(sanitizationService.sanitize(request.getTypeFreeText()));
+        TableRow row = TableRow.builder()
+                .typeNumber(request.getTypeNumber())
+                .typeSelector(request.getTypeSelector())
+                .typeFreeText(sanitizationService.sanitize(request.getTypeFreeText()))
+                .build();
 
         TableRow saved = repository.save(row);
 
